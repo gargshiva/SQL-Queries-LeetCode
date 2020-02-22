@@ -18,3 +18,45 @@
     on (t.DepartmentId = t3.DepartmentId and t.Salary = t3.Salary) order by Department;
     
 
+7. delete from Person where id in (select id  from  ( select id, email, row_number() over (partition by email) as num from Person) t where num > 1);
+
+8. select c.id from Weather c join Weather w on DATEDIFF(c.RecordDate,w.RecordDate) = 1  where c.Temperature > w.Temperature;
+
+9. select name,population,area from World where population > 25000000 or area > 3000000;
+
+10. select class from (select class , count(*)  as count from courses group by class) t where count >=5; 
+
+11. select * from cinema where id%2 = 1 and description not like '%boring%' order by rating desc;
+
+12. update salary set sex = CASE sex when 'm' THEN 'f' ELSE 'm' END;
+
+13. CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      # Write your MySQL query statement below.
+      select Salary from (select Salary,dense_rank() over (order by Salary desc) as ranking from Employee) r where ranking = N limit 1;
+  );
+END
+
+14. select Score, dense_rank() over (order by Score desc) as Rank from Scores;
+
+15. # Write your MySQL query statement below
+
+SELECT DISTINCT
+    l1.Num AS ConsecutiveNums
+FROM
+    Logs l1,
+    Logs l2,
+    Logs l3
+WHERE
+    l1.Id = l2.Id - 1
+    AND l2.Id = l3.Id - 1
+    AND l1.Num = l2.Num
+    AND l2.Num = l3.Num
+;
+
+16. select t2.Name as Department ,t1.Name as Employee ,t2.maxSal as Salary from Employee t1 join 
+
+    (select d.Name,e.DepartmentId, max(e.Salary) as maxSal from Employee e join Department d on (e.DepartmentId = d.Id) group by e.DepartmentId,d.Name) t2
+
+    on (t1.DepartmentId = t2.DepartmentId and t1.Salary = t2.maxSal);    
