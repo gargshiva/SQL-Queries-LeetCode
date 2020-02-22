@@ -11,3 +11,4 @@ SQL problems from LeetCode
 
 5. https://leetcode.com/problems/customers-who-never-order/
 
+6. https://leetcode.com/problems/department-top-three-salaries/
