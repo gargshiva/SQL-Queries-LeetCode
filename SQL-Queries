@@ -8,3 +8,13 @@
 
 5.select c.Name as Customers from Customers c left outer join Orders o on (c.Id = o.CustomerId) where  o.Id is null;
 
+6.select t3.Name as Department , t.Name as Employee ,t.Salary as Salary from Employee t join (
+    select distinct Salary, Name , DepartmentId  from (
+        select * from (
+              select d.Name ,e.DepartmentId, Salary, dense_rank() over( partition by e.DepartmentId order by e.Salary desc) as Salranking from Employee e join Department d on (e.DepartmentId = d.Id) 
+            ) t1 
+          where Salranking <=3 ) t2 
+         ) t3   
+    on (t.DepartmentId = t3.DepartmentId and t.Salary = t3.Salary) order by Department;
+    
+
