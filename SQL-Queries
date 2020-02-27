@@ -60,3 +60,18 @@ WHERE
     (select d.Name,e.DepartmentId, max(e.Salary) as maxSal from Employee e join Department d on (e.DepartmentId = d.Id) group by e.DepartmentId,d.Name) t2
 
     on (t1.DepartmentId = t2.DepartmentId and t1.Salary = t2.maxSal);    
+    
+17. # Name of the person with label (Highest/Lowest salary) in each department.
+
+   select department , first_name , salary ,
+	case 
+		when salary = MinSal then 'LOWEST SALARY'
+		when salary = MaxSal then 'HIGHEST SALARY'
+	end as Salary_In_Department  from (
+		select * from (select department , first_name , salary ,
+			(select min(salary) from employees e2  where e2.department=e1.department) as MinSal,
+			(select max(salary) from employees e3 where e3.department=e1.department)  as MaxSal  
+		from employees e1 ) t1
+		where salary in (MinSal,MaxSal)
+		order by department
+	) t2;    
