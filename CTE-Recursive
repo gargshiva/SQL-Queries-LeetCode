@@ -1,0 +1,62 @@
+-- Hierarchical Queries
+
+--Find all the managers of given employee
+
+with recursive find_managers as (
+	-- Anchor condition
+  select employee_id,full_name,manager_id
+  from employee where employee_id = 18
+	
+  union all
+  
+  select e.employee_id,e.full_name,e.manager_id
+  from employee e inner join find_managers f
+  on f.manager_id = e.employee_id
+) select * from find_managers;
+
+-- Find all the subordinates of given employee
+
+with recursive subordinates as (
+	-- Anchor condition : Immidiate suordinates for employee_id 7
+	select employee_id,full_name,manager_id
+	from employee
+	where manager_id = 7
+	
+	union all
+	
+	select e.employee_id,e.full_name,e.manager_id
+	from employee e inner join subordinates s
+	on s.employee_id = e.manager_id
+) select * from subordinates union select * from employee where employee_id = 7;
+
+-- Find Skip level manager for given employee / employees
+with recursive skip_manager as (
+ select employee_id , full_name, manager_id next_level_manager_id , employee_id manager_employee_id, full_name  next_level_manager_name, 1 as level
+ from employee
+-- where employee_id = 17
+
+ union all
+
+ select s.employee_id,s.full_name,e.manager_id,e.employee_id,e.full_name,level+1
+ from employee e inner join skip_manager s
+ on e.employee_id = s.next_level_manager_id
+)select employee_id,full_name,manager_employee_id,next_level_manager_name from skip_manager where level = 3;
+
+-- Find first parent manager which earns more than double than employee
+
+with recursive parent_manager as (
+  select eid,name,salary,manager,eid parent_manager_id,name parent_manager_name,salary parent_manager_salary, 1 as level
+  from emp
+  --where eid = 5
+	
+  union all
+	
+  select m.eid,m.name,m.salary,e.manager,e.eid,e.name,e.salary , level +1
+  from emp e inner join parent_manager m
+  on (m.manager = e.eid) 
+), salary_condition_cte as (
+   select * from parent_manager where salary * 2 <= parent_manager_salary 
+) , level_rank_cte as (
+    select * , dense_rank() over (partition by  eid order by level asc) as rk from salary_condition_cte
+) select eid,name,salary,parent_manager_id,parent_manager_name,parent_manager_salary  from level_rank_cte where rk = 1;
+
