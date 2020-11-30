@@ -1,0 +1,56 @@
+-- Booking.com
+
+
+create table Countries (id int , name varchar);
+insert into Countries values(10,'India')
+insert into Countries values (20,'UK');
+insert into Countries values(30,'Netherlands');
+insert into Countries values(40,'Portugal');
+
+select * from Countries;
+
+create table hotels (id int,country_id int , name varchar);
+insert into hotels values (1, 10, 'Comfort Inn');
+insert into hotels values (2,10,'Oberoi');
+insert into hotels values (3,20,'Park');
+insert into hotels  values (4,20,'Sheraton');
+insert into hotels values(5,30,'Taj');
+insert into hotels values(6,30,'Kingdom');
+
+select * from hotels;
+
+create table reservations (id int,hotel_id int,start_date date , nights int );
+insert into reservations values (11,2,'2020-12-10',5);
+insert into reservations values (12,3,'2020-12-11',3);
+insert into reservations  values (13,1,'2020-12-10',5);
+insert into reservations values (14,4,'2020-12-11',3);
+insert into reservations values (15,5,'2020-12-10',15);
+insert into reservations values (16,6,'2020-12-11',33);
+
+select * from reservations;
+
+select name, COALESCE(sum(ct),0) from(
+select c.id,c.name,h.id, r.ct
+from Countries c left outer join Hotels h
+on (c.id = h.country_id)
+left outer join (select hotel_id , sum(nights) as ct from Reservations group by hotel_id) r
+on (h.id = r.hotel_id ) ) tb1
+group by name order by  COALESCE(sum(ct),0) desc , name asc;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
